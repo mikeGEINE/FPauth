@@ -1,6 +1,6 @@
 open Base
-open FPauth.Static
-open FPauth.Static.StratResult.Infix
+open FPauth_core.Static
+open FPauth_core.Static.StratResult.Infix
 
 let name = "TOTP"
 
@@ -31,8 +31,8 @@ module type RESPONSES = sig
   val response_enabled : response promise 
 end
 
-module Make (R : RESPONSES) (M : MODEL) (V : FPauth.Auth_sign.VARIABLES with type entity = M.t)
-: (FPauth.Auth_sign.STRATEGY with type entity = M.t) = struct
+module Make (R : RESPONSES) (M : MODEL) (V : FPauth_core.Auth_sign.VARIABLES with type entity = M.t)
+: (FPauth_core.Auth_sign.STRATEGY with type entity = M.t) = struct
   open R
   
   type entity = M.t

@@ -17,7 +17,7 @@ module Entity = struct
       Result.Error (Error.of_string "Wrong name!")
 
   let identificate request =
-    match FPauth.Static.Params.get_param_req "name" request with
+    match FPauth_core.Static.Params.get_param_req "name" request with
     | None -> Lwt.return_error (Error.of_string "No param \'name\' in request")
     | Some "test1" -> Lwt.return_error (Error.of_string "Wrong name")
     | Some name -> Lwt.return_ok {name}
@@ -31,10 +31,18 @@ let user_none : Entity.t = {name = "none"}
 
 let user : Entity.t = {name = "test"}
 
-module Auth = FPauth.Make_Auth(Entity)
+module Auth = struct
+  module Variables = FPauth_core.Variables.Make_Variables (Entity)
+
+  module SessionManager = FPauth_core.Session_manager.Make_SessionManager (Entity) (Variables)
+
+  module Authenticator = FPauth_core.Authenticator.Make_Authenticator (Entity) (Variables)
+
+  module Router = FPauth_core.Router.Make (Entity) (Authenticator) (Variables)
+end
 
 module Strategy = struct
-  open FPauth.Static
+  open FPauth_core.Static
 
   type entity = Entity.t
 

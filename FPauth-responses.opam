@@ -1,9 +1,9 @@
 opam-version: "2.0"
 
-name: "FPauth"
+name: "FPauth-responses"
 version: "1.0.0"
 
-synopsis: "Easy authentication system for Dream framework"
+synopsis: "Responses on basic events in FPauth-core authentication system"
 
 homepage: "https://github.com/mikeGEINE/FPauth"
 bug-reports: "https://github.com/mikeGEINE/FPauth/issues"
@@ -15,8 +15,6 @@ maintainer: "Mikhail Geine <mike.geine@gmail.com>"
 
 build: [
   ["dune" "build" "-p" name "-j" jobs]
-  # ["dune" "runtest" "-p" name "-j" jobs] {with-test}
-  ["dune" "build" "@doc" "-p" name "-j" jobs] {with-doc}
 ]
 
 run-test: [
@@ -25,14 +23,10 @@ run-test: [
 
 depends: [
     "dream" {>="1.0.0~alpha3"}
-    "argon2"
-    "twostep"
     "ocaml" {>="4.12.0"}
     "dune" {>="2.0"}
     "base" 
     "FPauth-core"
-    "FPauth-strategies"
-    "FPauth-responses"
 
     #Testing, development
     "alcotest" {with-test}

@@ -4,7 +4,7 @@ open Base
 open Lwt
 open Lwt.Syntax
 open Setup
-open FPauth.Static
+open FPauth_core.Static
 
 module A = Auth.Authenticator
 
@@ -12,11 +12,11 @@ let strategy : Auth.Authenticator.strategy = (module Strategy)
 
 let wrong_strat : Auth.Authenticator.strategy = (module ChangeNameStrat)
 
-let fake_extractor lst _ = FPauth.Static.Params.of_assoc lst |> Lwt.return
+let fake_extractor lst _ = Params.of_assoc lst |> Lwt.return
 
 let test_middlewares params handler = Dream.memory_sessions 
                                       @@ Auth.SessionManager.auth_setup 
-                                      @@ FPauth.Static.Params.set_params ~extractor:(fake_extractor params) 
+                                      @@ Params.set_params ~extractor:(fake_extractor params) 
                                       handler
 
 let respond request = function

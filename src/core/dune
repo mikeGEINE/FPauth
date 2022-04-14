@@ -1,7 +1,7 @@
 (library
- (name FPauth__core)
- (public_name FPauth.core)
- (libraries base argon2 twostep dream)
+ (name FPauth_core)
+ (public_name FPauth-core)
+ (libraries base dream)
  (preprocess
   (pps lwt_ppx))
   (instrumentation (backend bisect_ppx)))

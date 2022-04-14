@@ -1,5 +1,5 @@
 open Base
-open FPauth.Static
+open FPauth_core.Static
 
 
 let name = "password"
@@ -11,7 +11,7 @@ module type MODEL = sig
   val encrypted_password: t -> string option
 end
 
-module Make (M : MODEL) : (FPauth.Auth_sign.STRATEGY with type entity = M.t) = struct
+module Make (M : MODEL) : (FPauth_core.Auth_sign.STRATEGY with type entity = M.t) = struct
 
   open StratResult
   open StratResult.Infix

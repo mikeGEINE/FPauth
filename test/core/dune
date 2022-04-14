@@ -1,14 +1,15 @@
-(executable
+(test
  (name unit)
+ (package FPauth-core)
  (libraries
   alcotest
   dream
   lwt
   lwt.unix
-  FPauth
+  FPauth-core
   base
  ))
 
-(rule
- (alias runtest)
- (action (run %{exe:unit.exe})))
+; (rule
+;  (alias runtest)
+;  (action (run %{exe:unit.exe})))

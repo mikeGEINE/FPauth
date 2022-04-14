@@ -7,7 +7,7 @@ module type MODEL = sig
   val name : t -> string
 end
 
-module Make (M : MODEL) (Variables : FPauth.Auth_sign.VARIABLES with type entity = M.t) : (FPauth.Auth_sign.RESPONSES) = struct
+module Make (M : MODEL) (Variables : FPauth_core.Auth_sign.VARIABLES with type entity = M.t) : (FPauth_core.Auth_sign.RESPONSES) = struct
   
   let login_successful request = 
     let user = Option.value_exn (field request Variables.current_user) in

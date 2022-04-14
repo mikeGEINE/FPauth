@@ -1,14 +1,16 @@
-module Static = FPauth__core.Static
+open FPauth_core
 
-module Make_Auth (M : FPauth__core.Auth_sign.MODEL) = struct
+module Static = Static
 
-  module Variables = FPauth__core.Variables.Make_Variables (M)
+module Make_Auth (M : Auth_sign.MODEL) = struct
 
-  module SessionManager = FPauth__core.Session_manager.Make_SessionManager (M) (Variables)
+  module Variables = Variables.Make_Variables (M)
 
-  module Authenticator = FPauth__core.Authenticator.Make_Authenticator (M) (Variables)
+  module SessionManager = Session_manager.Make_SessionManager (M) (Variables)
 
-  module Router = FPauth__core.Router.Make (M) (Authenticator) (Variables)
+  module Authenticator = Authenticator.Make_Authenticator (M) (Variables)
+
+  module Router = Router.Make (M) (Authenticator) (Variables)
 end
 
-module Auth_sign = FPauth__core.Auth_sign
+module Auth_sign = Auth_sign

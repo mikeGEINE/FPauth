@@ -1,5 +1,5 @@
 (*Testing Static*)
-open FPauth.Static
+open FPauth_core.Static
 open Base
 open Setup
 

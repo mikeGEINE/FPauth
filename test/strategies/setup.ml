@@ -74,12 +74,12 @@ module EntityPassword = struct
       Result.Error (Error.of_string "Wrong name!")
 
   let identificate request =
-    match FPauth.Static.Params.get_param_req "name" request with
+    match FPauth_core.Static.Params.get_param_req "name" request with
     | None -> Lwt.return_error (Error.of_string "No param \'name\' in request")
     | Some "test1" -> Lwt.return_error (Error.of_string "Wrong name")
     | Some name -> Lwt.return_ok {name}
 
-  let applicable_strats _ = [FPauth__strategies.Password.name]
+  let applicable_strats _ = [FPauth_strategies.Password.name]
 
   let name ent = ent.name
 
@@ -103,12 +103,12 @@ module EntityOTP = struct
   let deserialize str = Result.Ok {name=str}
 
   let identificate request =
-    match FPauth.Static.Params.get_param_req "name" request with
+    match FPauth_core.Static.Params.get_param_req "name" request with
     | None -> Lwt.return_error (Error.of_string "No param \'name\' in request")
     | Some "test1" -> Lwt.return_error (Error.of_string "Wrong name")
     | Some name -> Lwt.return_ok {name}
 
-  let applicable_strats _ = [FPauth__strategies.Otp.name]
+  let applicable_strats _ = [FPauth_strategies.Otp.name]
 
   let name ent = ent.name
 
@@ -124,4 +124,14 @@ module EntityOTP = struct
 
   let set_otp_enabled _ user enabled =
     {name=(user.name ^ (Bool.to_string enabled))} |> Lwt.return
+end
+
+module Make_Auth (Entity : FPauth_core.Auth_sign.MODEL) = struct
+  module Variables = FPauth_core.Variables.Make_Variables (Entity)
+
+  module SessionManager = FPauth_core.Session_manager.Make_SessionManager (Entity) (Variables)
+
+  module Authenticator = FPauth_core.Authenticator.Make_Authenticator (Entity) (Variables)
+
+  module Router = FPauth_core.Router.Make (Entity) (Authenticator) (Variables)
 end

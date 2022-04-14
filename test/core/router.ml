@@ -3,12 +3,13 @@
 open Base
 open Lwt.Syntax
 open Setup
+open FPauth_core
 
 module R = Auth.Router
 
 let strategy : Auth.Authenticator.strategy = (module Strategy)
 
-let fake_extractor lst _ = FPauth.Static.Params.of_assoc lst |> Lwt.return
+let fake_extractor lst _ = Static.Params.of_assoc lst |> Lwt.return
 
 module Responses = struct
   open Dream

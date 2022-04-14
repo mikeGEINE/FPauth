@@ -1,6 +1,6 @@
 (library
- (name FPauth__responses)
- (public_name FPauth.responses)
- (libraries base FPauth argon2)
+ (name FPauth_responses)
+ (public_name FPauth-responses)
+ (libraries base FPauth-core)
  (preprocess
   (pps lwt_ppx)))

@@ -1,18 +1,19 @@
-(executable
+(test
  (name unit)
+ (package FPauth-strategies)
  (libraries
   alcotest
   dream
   lwt
   lwt.unix
-  FPauth
-  FPauth__strategies
+  FPauth-core
+  FPauth-strategies
   base
   twostep
  )
  (preprocess
   (pps lwt_ppx)))
 
-(rule
- (alias runtest)
- (action (run %{exe:unit.exe})))
+; (rule
+;  (alias runtest)
+;  (action (run %{exe:unit.exe})))

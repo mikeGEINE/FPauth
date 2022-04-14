@@ -4,7 +4,7 @@ open Setup
 
 module Entity = EntityOTP
 
-module Auth = FPauth.Make_Auth(Entity)
+module Auth = Make_Auth(Entity)
 
 module OtpResponses = struct
   let response_error err = 
@@ -17,7 +17,7 @@ module OtpResponses = struct
     Dream.respond ("TOTP enabled : true")
 end
 
-module Otp = FPauth__strategies.Otp
+module Otp = FPauth_strategies.Otp
 
 module Strategy = Otp.Make (OtpResponses) (Entity) (Auth.Variables)
 
@@ -43,11 +43,11 @@ module Responses = struct
     | Some auth -> respond ("auth : "^( auth |> Bool.to_string))
 end
 
-let fake_extractor lst _ = FPauth.Static.Params.of_assoc lst |> Lwt.return
+let fake_extractor lst _ = FPauth_core.Static.Params.of_assoc lst |> Lwt.return
 
 let test_middlewares_call params handler = Dream.memory_sessions 
                                       @@ Auth.SessionManager.auth_setup 
-                                      @@ FPauth.Static.Params.set_params ~extractor:(fake_extractor params) 
+                                      @@ FPauth_core.Static.Params.set_params ~extractor:(fake_extractor params) 
                                       handler
 
 let put_session usr inner_handler requset = 

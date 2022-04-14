@@ -1,4 +1,4 @@
-open FPauth__core
+open FPauth_core
 
 (**[FPauth] is a library for easy yet customizable authentication in Dream web-applications*)
 
