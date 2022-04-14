@@ -1,0 +1,18 @@
+(executable
+ (name unit)
+ (libraries
+  alcotest
+  dream
+  lwt
+  lwt.unix
+  FPauth
+  FPauth__strategies
+  base
+  twostep
+ )
+ (preprocess
+  (pps lwt_ppx)))
+
+(rule
+ (alias runtest)
+ (action (run %{exe:unit.exe})))

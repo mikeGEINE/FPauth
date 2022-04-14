@@ -1,0 +1,6 @@
+(library
+ (name FPauth__strategies)
+ (libraries base FPauth argon2 twostep)
+ (preprocess
+  (pps lwt_ppx))
+  (instrumentation (backend bisect_ppx)))

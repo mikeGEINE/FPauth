@@ -1,0 +1,35 @@
+opam-version: "2.0"
+
+name: "FPauth"
+version: "1.0.0"
+
+synopsis: "Easy authentication system for Dream framework"
+
+homepage: "https://github.com/mikeGEINE/FPauth"
+bug-report: "https://github.com/mikeGEINE/FPauth/issues"
+dev-repo: "git+https://github.com/mikeGEINE/FPauth.git"
+
+authors: ["Mikhail Geine <mike.geine@gmail.com>"
+          "Pavel Argentov <argentoff@gmail.com>"]
+maintainer: "Mikhail Geine <mike.geine@gmail.com>"
+
+build: [
+  ["dune" "build" "-p" name "-j" jobs]
+]
+
+run-test: [
+  ["dune" "runtest" "-p" name "-j" jobs]
+]
+
+depends: [
+    "dream" {>="1.0.0~alpha3"}
+    "argon2"
+    "twostep"
+    "ocaml" {>="4.12.0"}
+    "dune" {>="2.0"}
+    "base" 
+
+    #Testing, development
+    "alcotest" {with-test}
+    "bisect_ppx" {with-test & >= "2.5.0"}  # --instrument-with.
+]

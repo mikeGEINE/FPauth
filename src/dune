@@ -1,0 +1,6 @@
+(library
+ (public_name FPauth)
+ (libraries dream base FPauth.core)
+ (preprocess
+  (pps lwt_ppx))
+  (instrumentation (backend bisect_ppx)))
