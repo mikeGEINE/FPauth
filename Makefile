@@ -40,6 +40,10 @@ promote :
 	@make --no-print-directory test
 
 .PHONY : docs
-docs :
-	make -C docs/web --no-print-directory
-	@echo See docs/web/build/index.html
+docs : 
+	dune build @doc
+	@cp -r ./_build/default/_doc/_html/. ./_doc
+
+.PHONY : docs-publish
+docs-publish :
+	git subtree push --prefix _doc origin gh-pages
