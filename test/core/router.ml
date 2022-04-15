@@ -28,7 +28,7 @@ module Responses = struct
 end
 
 let test_middlewares params = Dream.memory_sessions 
-                                      @@ Auth.SessionManager.auth_setup 
+                                      @@ Auth.Session_manager.auth_setup 
                                       @@ Dream.router [
                                         R.call [strategy] ~responses:(module Responses) ~extractor:(fake_extractor params)
                                       ]
@@ -68,7 +68,7 @@ let tests = "FPauth.Router: ", [
       inner_handler requset in
     let response = Dream.test (Dream.memory_sessions 
       @@ put_session (Entity.serialize user) 
-      @@ Auth.SessionManager.auth_setup
+      @@ Auth.Session_manager.auth_setup
       @@ Dream.router [R.call [strategy] ~responses:(module Responses) ~extractor:(fake_extractor [])]) 
       req in
     let expected = "auth : false" in

@@ -4,7 +4,7 @@ open Setup
 
 module Entity = EntityOTP
 
-module Auth = Make_Auth(Entity)
+module Auth = FPauth_core.Make_Auth(Entity)
 
 module OtpResponses = struct
   let response_error err = 
@@ -17,7 +17,7 @@ module OtpResponses = struct
     Dream.respond ("TOTP enabled : true")
 end
 
-module Otp = FPauth_strategies.Otp
+module Otp = FPauth_strategies.TOTP
 
 module Strategy = Otp.Make (OtpResponses) (Entity) (Auth.Variables)
 
@@ -46,7 +46,7 @@ end
 let fake_extractor lst _ = FPauth_core.Static.Params.of_assoc lst |> Lwt.return
 
 let test_middlewares_call params handler = Dream.memory_sessions 
-                                      @@ Auth.SessionManager.auth_setup 
+                                      @@ Auth.Session_manager.auth_setup 
                                       @@ FPauth_core.Static.Params.set_params ~extractor:(fake_extractor params) 
                                       handler
 
@@ -55,12 +55,12 @@ let put_session usr inner_handler requset =
   inner_handler requset
 let test_middlewares_handlers usr params = Dream.memory_sessions
                                       @@ put_session usr
-                                      @@ Auth.SessionManager.auth_setup 
+                                      @@ Auth.Session_manager.auth_setup 
                                       @@ Dream.router [
                                         Auth.Router.call [strategy] ~responses:(module Responses) ~extractor:(fake_extractor params)
                                       ]
 let test_middlewares_handlers_empty params = Dream.memory_sessions
-                                      @@ Auth.SessionManager.auth_setup 
+                                      @@ Auth.Session_manager.auth_setup 
                                       @@ Dream.router [
                                         Auth.Router.call [strategy] ~responses:(module Responses) ~extractor:(fake_extractor params)
                                       ]
@@ -193,7 +193,7 @@ let json_strat : Auth.Authenticator.strategy = (module Json_strat)
 
 let json_test_middlewares usr params = Dream.memory_sessions
                                       @@ put_session usr
-                                      @@ Auth.SessionManager.auth_setup 
+                                      @@ Auth.Session_manager.auth_setup 
                                       @@ Dream.router [
                                         Auth.Router.call [json_strat] ~responses:(module Responses) ~extractor:(fake_extractor params)
                                       ]

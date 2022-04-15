@@ -1,8 +1,11 @@
+(**[Authenticator] is module which provides functions both for authentication and logout*)
+
 open Base
 open Dream
 open Static
 
-module Make_Authenticator (M : Auth_sign.MODEL) (V : Auth_sign.VARIABLES with type entity = M.t ) : (Auth_sign.AUTHENTICATOR with type entity = M.t) = struct
+(**[Make] creates an instance of {!Auth_sign.AUTHENTICATOR} for a given model and variables*)
+module Make (M : Auth_sign.MODEL) (V : Auth_sign.VARIABLES with type entity = M.t ) : (Auth_sign.AUTHENTICATOR with type entity = M.t) = struct
   
   type entity = M.t
 

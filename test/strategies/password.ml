@@ -14,12 +14,12 @@ let user_none : Entity.t = {name = "none"}
 
 let user_rand : Entity.t = {name= "rand"}
 
-module Auth = Make_Auth(Entity)
+module Auth = FPauth_core.Make_Auth(Entity)
 
 let fake_extractor lst _ = FPauth_core.Static.Params.of_assoc lst |> Lwt.return
 
 let test_middlewares params handler = Dream.memory_sessions 
-                                      @@ Auth.SessionManager.auth_setup 
+                                      @@ Auth.Session_manager.auth_setup 
                                       @@ FPauth_core.Static.Params.set_params ~extractor:(fake_extractor params) 
                                       handler
 

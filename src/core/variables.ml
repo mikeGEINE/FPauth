@@ -1,7 +1,10 @@
+(**[VARIABLES] is a module which inits and holds field variables for authentication*)
+
 open Dream
 open Base
 
-module Make_Variables (M : Auth_sign.MODEL) : (Auth_sign.VARIABLES with type entity = M.t) = struct
+(**[Make] creates an instance of {!Auth_sign.VARIABLES} for a given model*)
+module Make (M : Auth_sign.MODEL) : (Auth_sign.VARIABLES with type entity = M.t) = struct
   type entity = M.t
 
   let authenticated : bool field = new_field ()

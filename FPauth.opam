@@ -15,7 +15,6 @@ maintainer: "Mikhail Geine <mike.geine@gmail.com>"
 
 build: [
   ["dune" "build" "-p" name "-j" jobs]
-  # ["dune" "runtest" "-p" name "-j" jobs] {with-test}
   ["dune" "build" "@doc" "-p" name "-j" jobs] {with-doc}
 ]
 
@@ -25,8 +24,6 @@ run-test: [
 
 depends: [
     "dream" {>="1.0.0~alpha3"}
-    "argon2"
-    "twostep"
     "ocaml" {>="4.12.0"}
     "dune" {>="2.0"}
     "base" 

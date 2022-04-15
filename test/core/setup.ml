@@ -31,15 +31,7 @@ let user_none : Entity.t = {name = "none"}
 
 let user : Entity.t = {name = "test"}
 
-module Auth = struct
-  module Variables = FPauth_core.Variables.Make_Variables (Entity)
-
-  module SessionManager = FPauth_core.Session_manager.Make_SessionManager (Entity) (Variables)
-
-  module Authenticator = FPauth_core.Authenticator.Make_Authenticator (Entity) (Variables)
-
-  module Router = FPauth_core.Router.Make (Entity) (Authenticator) (Variables)
-end
+module Auth = FPauth_core.Make_Auth (Entity)
 
 module Strategy = struct
   open FPauth_core.Static

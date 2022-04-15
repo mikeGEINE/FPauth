@@ -15,7 +15,7 @@ let wrong_strat : Auth.Authenticator.strategy = (module ChangeNameStrat)
 let fake_extractor lst _ = Params.of_assoc lst |> Lwt.return
 
 let test_middlewares params handler = Dream.memory_sessions 
-                                      @@ Auth.SessionManager.auth_setup 
+                                      @@ Auth.Session_manager.auth_setup 
                                       @@ Params.set_params ~extractor:(fake_extractor params) 
                                       handler
 
@@ -95,7 +95,7 @@ let tests = "FPauth.Authenticator: ", [
       Dream.respond ("auth : "^auth request) in
     let response = Dream.test (Dream.memory_sessions 
       @@ put_session (Entity.serialize user) 
-      @@ Auth.SessionManager.auth_setup 
+      @@ Auth.Session_manager.auth_setup 
       @@ test_handler) req in
     let expected = "auth : false" in
     Dream.body response 

@@ -4,7 +4,7 @@ open Base
 open Lwt.Syntax
 open Setup
 
-module SM = Auth.SessionManager
+module SM = Auth.Session_manager
 
 let test_handler request = 
   let auth = Dream.field request Auth.Variables.authenticated |> Option.value ~default:false |> Bool.to_string 

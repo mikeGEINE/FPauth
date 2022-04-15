@@ -30,11 +30,16 @@ module type SESSIONMANAGER = sig
   
   (**[auth_setup] is a middleware which controlls session, setups [field] variables and helper functions for downstream handlers*)
   val auth_setup : middleware
+  (** [auth_setup] tries to extract [auth] string from session and determine the status of authentication.
+  If there is no [auth], then there were no authentication. 
+  If [auth] exisits, than {!set_helpers} checks it and manages authentication status. If something is wrong with a session, 
+  [Error Error.t] is returned, and in this case session is invalidated, error is logged and 401 is sent.
+  If session is ok, [Ok request] is recived, and that requested is passed on. *)
 end
 
 (**[STRATEGY] is a module which contains functions for entity authentications in a certain method, as well as supporting routes and functions*)
 module type STRATEGY = sig
-  
+  (** type [entity] is a type of authenticatable entity equal to {!MODEL.t}*)
   type entity
 
   (**[call] is a core function of a strategy. It determines ways of authenticating an entity*)
@@ -89,4 +94,39 @@ module type RESPONSES = sig
 
   (**[logout] is triggered after authentication has been reset*)
   val logout : request -> response promise
+end
+
+(**[ROUTER] is a module which contains handlers for authentication and creates routes for them.*)
+module type ROUTER = sig
+  (** type [entity] is a type of authenticatable entity equal to {!MODEL.t}*)
+  type entity
+
+  (** [strategy] is a function that authenticates an entity from a request.*)
+  type strategy = (module STRATEGY with type entity = entity)
+
+  (**[login_handler] gets strats and redponses, starts authentication and handles its results*)
+  val login_handler :
+    strategy list ->
+    (module RESPONSES) -> Dream.request -> Dream.response Lwt.t
+
+  (**[logout_handler] loguts authenticated user*)
+  val logout_handler :
+    (module RESPONSES) -> Dream.request -> Dream.response Lwt.t
+
+  (**[call ?root ~responses ~extractor strat_list] creates routes for authentication and added to [Dream.router].
+
+  Has some basic routes:
+
+  - "/auth" is an entrypoint for authentication. Runs all [strategies] in order they were supplied in {!Auth_sign.AUTHENTICATOR.authenticate}. Handles the results and calls corresponding handlers from {!Auth_sign.RESPONSES}.
+  - "/logout" completes logout with {!Authenticator.logout} and responses with {!Auth_sign.RESPONSES.logout}
+
+  [extractor] defines how to extract params from requests for basic routes. See {!Static.Params.extractor}.
+  
+  [responses] define how to respond on these basic routes after handling authentication processes.
+  
+  [?root] defines the root for all authentication-related routes. Default is "/".*)
+  val call :
+    ?root:string ->
+    responses:(module RESPONSES) ->
+    extractor:Static.Params.extractor -> strategy list -> Dream.route
 end

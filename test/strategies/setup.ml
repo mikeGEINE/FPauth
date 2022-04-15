@@ -108,7 +108,7 @@ module EntityOTP = struct
     | Some "test1" -> Lwt.return_error (Error.of_string "Wrong name")
     | Some name -> Lwt.return_ok {name}
 
-  let applicable_strats _ = [FPauth_strategies.Otp.name]
+  let applicable_strats _ = [FPauth_strategies.TOTP.name]
 
   let name ent = ent.name
 
@@ -124,14 +124,4 @@ module EntityOTP = struct
 
   let set_otp_enabled _ user enabled =
     {name=(user.name ^ (Bool.to_string enabled))} |> Lwt.return
-end
-
-module Make_Auth (Entity : FPauth_core.Auth_sign.MODEL) = struct
-  module Variables = FPauth_core.Variables.Make_Variables (Entity)
-
-  module SessionManager = FPauth_core.Session_manager.Make_SessionManager (Entity) (Variables)
-
-  module Authenticator = FPauth_core.Authenticator.Make_Authenticator (Entity) (Variables)
-
-  module Router = FPauth_core.Router.Make (Entity) (Authenticator) (Variables)
 end

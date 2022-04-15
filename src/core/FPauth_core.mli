@@ -1,9 +1,12 @@
-open FPauth_core
-
-(**[FPauth] is a library for easy yet customizable authentication in Dream web-applications*)
+(**[FPauth_core] is a library for easy yet customizable authentication in Dream web-applications*)
 
 (**[Static] is a module containg static type definitions, which are not dependent on {!Auth_sign.MODEL}*)
 module Static = Static
+
+module Variables = Variables
+module Session_manager = Session_manager
+module Authenticator = Authenticator
+module Router = Router
 
 (**[Make_Auth] creates a module based on {!Auth_sign.MODEL}. Provides local variables, middlewares and authenticator 
 to run authentication strategies.*)
@@ -26,9 +29,3 @@ module Make_Auth :
 
 (**[Auth_sign] is a module containig signatures for modules which can be implemented and integrated from outside the lib, as well as signatures for some inner modules.*)
 module Auth_sign = Auth_sign
-
-(**[Strategies] contain two default strategies: {!FPauth_strategies.Password} and {!FPauth_strategies.Otp}*)
-module Strategies = FPauth_strategies
-
-(**[Responses] contain some default responses to basic authentication events*)
-module Responses = FPauth_responses

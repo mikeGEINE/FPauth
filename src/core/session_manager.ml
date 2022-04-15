@@ -1,12 +1,15 @@
+(**[Session_manager] contains*)
+
 open Base
 open Dream
 open Lwt.Syntax
 
-(** [Make_SessionManager] is a functor for creating modules of middlewares for various entities matching {!Auth.MODEL}*)
-module Make_SessionManager (M : Auth_sign.MODEL) (V :Auth_sign.VARIABLES with type entity = M.t) : (Auth_sign.SESSIONMANAGER with type entity = M.t) = struct
+(** [Make] is a functor for creating modules of middlewares for various entities matching {!Auth.MODEL}*)
+module Make (M : Auth_sign.MODEL) (V :Auth_sign.VARIABLES with type entity = M.t) : (Auth_sign.SESSIONMANAGER with type entity = M.t) = struct
 
     type entity = M.t
-    (** [set_helpers] sets field variables for a request an manages authentication status in case if [auth] is in a session.
+    
+    (** [set_helpers] sets field variables for a request and manages authentication status in case if [auth] is in a session.
     - If [serialized] is empty, then [Error Error.t] is returned, as it is abnormal situation.
     - If {!M.deserialize} ended up with an [Error Error.t], then authentication is incomplete and {!auth_session_error} is set with the sting.
     - If {!M.deserialize} ended with [Ok M.t], then authentication is considered successful and {!current_user} is set.*)
