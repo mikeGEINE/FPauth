@@ -13,3 +13,5 @@ _opam/
 
 # Bisect_ppx
 _coverage/
+
+_doc/

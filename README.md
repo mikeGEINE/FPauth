@@ -1,6 +1,8 @@
 # FPauth - user authentication for Dream
 
-FPauth is an easy user authentication system for [OCaml Dream](https://github.com/aantron/dream) web-framework. 
+FPauth is an easy user authentication system for [OCaml Dream](https://github.com/aantron/dream) web-framework.
+![FPauth code example](docs/code-example.svg)
+ 
 The system allows to:
 * Control authentication in web-session;
 * Get authentication status for each request via `Dream.field`;
@@ -10,6 +12,8 @@ The system allows to:
 * Add your own representations of authentication events or use built-in;
 * Use built-in handlers or write your own;
 * Extract params for authentication from requests.
+
+Docs can be found [here](https://mikegeine.github.io/FPauth/).
 
 ## Quick setup
 
@@ -25,11 +29,11 @@ There are some strategies in `FPauth_strategies`. `Password` can be used for pas
 module Password = FPauth_strategies.Password.Make (User)
 ```
 
-* Add `SessionManager` middleware after your session middleware;
+* Add `Session_manager` middleware after your session middleware;
 ```OCaml
-let () = run ~interface:"0.0.0.0" ~port:8080
+let () = run
   @@ memory_sessions
-  @@ Auth.SessionManager.auth_setup
+  @@ Auth.Session_manager.auth_setup
 ```
 
 * Insert FPauth routes into `Dream.router` middleware. Here you specify strategies used in the authentication process, the way params are extracted, responses on main authentication events. You can also specify the scope for authentication routes;
@@ -46,7 +50,7 @@ Strategies and Responses modules are passed as first-class objects which suffice
 ## Advanced Usage
 It is possible to customize many aspects of the system workflow.
 * You can install only the packages you actually need: 
-  * `FPauth-core` contains SessionManager, Authenticator, Router, Variables, as well as Static module and signatures. These allow you to build your own workflow almost from the ground;
+  * `FPauth-core` contains Session_manager, Authenticator, Router, Variables, as well as Static module and signatures. These allow you to build your own workflow almost from the ground;
   * `FPauth-strategies` contains `Password` and `OTP` strategies. If you don't need them - you can choose not to have them 😉;
   * `FPauth-responses` contains some default responses on main authentication events;
 * You can write your own Strategies, Responses and Params Extractors.
