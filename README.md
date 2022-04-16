@@ -2,6 +2,8 @@
 
 FPauth is an easy user authentication system for [OCaml Dream](https://github.com/aantron/dream) web-framework.
 ![FPauth code example](docs/code-example.svg)
+
+The main idea behind the system is that user authentication is done via running sets of Strategies, and when one of them succeeds, user is considered to be authenticated. Authentication status is controlled by a middleware standing downstream of session middleware.
  
 The system allows to:
 * Control authentication in web-session;

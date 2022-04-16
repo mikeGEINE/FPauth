@@ -1,5 +1,7 @@
 (**[TOTP] is a time-based One-Time Password strategy. User's identity is verified via a password which is limited for a limited time only.*)
 
+(** Requires {b "totp_code" param}, otherwise skipped.*)
+
 (**Name of the strategy.*)
 val name : string
 
@@ -42,7 +44,7 @@ module Make :
     sig
       type entity = M.t
 
-      (**[call] is the main function of the strategy. It need "totp_code" param, otherwise it is skipped. Verifies, that the code is correct for user's secret.*)
+      (**[call] is the main function of the strategy. It needs "totp_code" param, otherwise it is skipped. Verifies, that the code is correct for user's secret.*)
       val call :
         Dream.request ->
         entity -> entity FPauth_core.Static.StratResult.t Lwt.t
@@ -55,4 +57,6 @@ module Make :
       (**See {!TOTP.name}*)
       val name : string
     end
+
+(**Module with responses for TOTP in JSON format*)
 module JSON_Responses : RESPONSES

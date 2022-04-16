@@ -3,6 +3,7 @@
 open Dream
 open Base
 
+(**[Make] creates responses for provided Variables*)
 module Make (Variables : FPauth_core.Auth_sign.VARIABLES) : (FPauth_core.Auth_sign.RESPONSES) = struct
   
   let login_successful request = 

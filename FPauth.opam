@@ -4,6 +4,23 @@ name: "FPauth"
 version: "1.0.0"
 
 synopsis: "Easy authentication system for Dream framework"
+description:"""
+FPauth is an easy user authentication system for Dream web-framework. 
+
+The main idea behind the system is that user authentication is done via running sets of Strategies, 
+and when one of them succeeds, user is considered to be authenticated. Authentication status is controlled by a middleware 
+standing downstream of session middleware.
+
+The system allows to:
+- Control authentication in web-session;
+- Get authentication status for each request via `Dream.field`;
+- Check user identity with strategies;
+- Use built-in strategies or custom ones;
+- Add all routes for authentication and strategies at once;
+- Add your own representations of authentication events or use built-in;
+- Use built-in handlers or write your own;
+- Extract params for authentication from requests.
+"""
 
 homepage: "https://github.com/mikeGEINE/FPauth"
 bug-reports: "https://github.com/mikeGEINE/FPauth/issues"

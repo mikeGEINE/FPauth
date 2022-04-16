@@ -42,6 +42,7 @@ promote :
 .PHONY : docs
 docs : 
 	dune build @doc
+	@rm -rf ./_doc
 	@cp -r ./_build/default/_doc/_html/. ./_doc
 
 .PHONY : docs-publish

@@ -1,5 +1,7 @@
 (**[Password] is a simple authentication strategy which verifies identity via provided in params password.*)
 
+(** Requires {b "password" param}, otherwise skipped.*)
+
 (**Name of the strategy.*)
 val name : string
 
