@@ -1,6 +1,11 @@
 (library
  (name FPauth_responses)
  (public_name FPauth-responses)
- (libraries base FPauth-core)
+ (libraries base FPauth-core dream)
  (preprocess
   (pps lwt_ppx)))
+
+(rule
+ (deps html_pages.eml.ml)
+ (targets html_pages.ml)
+ (action (run dream_eml %{deps} --workspace %{workspace_root})))

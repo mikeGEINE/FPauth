@@ -1,6 +1,9 @@
 (**[TOTP] is a time-based One-Time Password strategy. User's identity is verified via a password which is limited for a limited time only.*)
 
-(** Requires {b "totp_code" param}, otherwise skipped.*)
+(** Requires {b "totp_code" param}, otherwise skipped.
+Provides these routes in "/totp" scope:
+- GET "/generate_secret" is the first step to enable TOTP. Generates a secret for a user. The user must be authenticated first. The user must have TOTP disabled.
+- POST "/finish_setup" is the second step to enable TOTP. Should recieve "totp_code" as param, verifies it and enables TOTP if it was correct.*)
 
 (**Name of the strategy.*)
 val name : string
@@ -13,7 +16,8 @@ module type MODEL =
     (**Retrieves secret for TOTP for the user*)
     val otp_secret : t -> string
 
-    (**Checks if TOTP has already been setup*)
+    (**Checks if TOTP has already been setup for the user. 
+      Returns: true if the user can use TOTP strategy.*)
     val otp_enabled : t -> bool
 
     (**Sets TOTP secret during setup. Returns updated user.*)
