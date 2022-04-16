@@ -1,24 +1,20 @@
+(**This module contains responses for basic FPauth events in JSON format.*)
+
 open Dream
 open Base
 
-module type MODEL = sig
-  type t
-
-  val name : t -> string
-end
-
-module Make (M : MODEL) (Variables : FPauth_core.Auth_sign.VARIABLES with type entity = M.t) : (FPauth_core.Auth_sign.RESPONSES) = struct
+module Make (Variables : FPauth_core.Auth_sign.VARIABLES) : (FPauth_core.Auth_sign.RESPONSES) = struct
   
   let login_successful request = 
-    let user = Option.value_exn (field request Variables.current_user) in
-    json ("{\"success\" : true, \n
-            \"user\" : \""^ M.name user ^"\" }")
+    let auth = Option.value_exn (field request Variables.authenticated) |> Bool.to_string in
+    json ("{\"authenticated\" : "^ auth ^" }")
   
   
   let login_error request = 
-    let err = field request (Variables.auth_error) |> Option.value ~default:(Error.of_string "Unknown error") in
-    json ("{\"success\" : false, \n
-      \"error\" : "^ Error.to_string_mach err ^"}")
+    let err = field request (Variables.auth_error) |> Option.value ~default:(Error.of_string "Unknown error") |> Error.to_string_mach 
+    and auth = Option.value_exn (field request Variables.authenticated) |> Bool.to_string in
+    json ("{\"auth\" : "^ auth ^", \n
+      \"error\" : "^ err ^"}")
 
   let logout request =
     match field request Variables.authenticated with
