@@ -82,6 +82,9 @@ module type VARIABLES = sig
 
   (** [auth_error] is a field with error which occured during any stage of authentication*)
   val auth_error : Error.t field
+
+  (**[update_current_user user request] updates {!current_user} and session.*)
+  val update_current_user : entity -> request -> unit promise
 end
 
 (** [RESPONSES] is a module which defines how the library should represent some basic events*)

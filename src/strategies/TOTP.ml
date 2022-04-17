@@ -54,9 +54,6 @@ module Make (R : RESPONSES) (M : MODEL) (V : FPauth_core.Auth_sign.VARIABLES wit
   let call request user =
     is_enabled user >>== extract_otp request >>== verify_otp user |> Lwt.return
 
-  let update_current_user request user =
-    Dream.set_field request V.current_user user
-
   let generate_secret request =
     match Dream.field request V.current_user with
     | None -> Error.of_string "User should be authenticated first" |> response_error request
@@ -66,7 +63,7 @@ module Make (R : RESPONSES) (M : MODEL) (V : FPauth_core.Auth_sign.VARIABLES wit
       | false -> 
         let secret = Twostep.TOTP.secret () in 
         let%lwt updated_user = M.set_otp_secret request user secret in
-        update_current_user request updated_user;
+        let%lwt () = V.update_current_user updated_user request in
         response_secret request secret
 
   let finish_setup request =
@@ -84,7 +81,7 @@ module Make (R : RESPONSES) (M : MODEL) (V : FPauth_core.Auth_sign.VARIABLES wit
           | false -> Error.of_string "One-time password is incorrect!" |> response_error request
           | true -> 
             let%lwt updated_user = M.set_otp_enabled request user true in
-            update_current_user request updated_user;
+            let%lwt () = V.update_current_user updated_user request in
             response_enabled request
 
   let routes = 

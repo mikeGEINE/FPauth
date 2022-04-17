@@ -12,4 +12,8 @@ module Make (M : Auth_sign.MODEL) : (Auth_sign.VARIABLES with type entity = M.t)
   let current_user : entity field = new_field ()
 
   let auth_error : Error.t field = new_field ()
+
+  let update_current_user updated_user request =
+    set_field request current_user updated_user;
+    put_session "auth" (M.serialize updated_user) request
 end
