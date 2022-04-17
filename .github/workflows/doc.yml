@@ -3,7 +3,7 @@ name: Deploy API Documentation & Coveralls report
 on:
   push:
     branches:
-      - coveralls
+      - deploy-doc
 
 jobs:
   deploy-doc:
