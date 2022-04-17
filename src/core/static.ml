@@ -66,6 +66,17 @@ module Params = struct
       let%lwt body' = body request in
       Yojson.Safe.from_string body' |> Yojson.Safe.Util.to_assoc |> val_to_str [] |> Lwt.return 
     | _ -> of_assoc [] |> Lwt.return
+
+  let extract_form ?(csrf=true) request =
+    let content = header request "Content-Type" in
+    match content with
+    | Some "application/x-www-form-urlencoded" -> begin
+      match%lwt Dream.form ~csrf request with
+      |`Ok lst -> of_assoc lst |> Lwt.return
+      | _ -> of_assoc [] |> Lwt.return
+    end
+    | _ -> of_assoc [] |> Lwt.return
+
   
 
   let set_params ~(extractor:extractor) (inner_handler : Dream.handler) request = 

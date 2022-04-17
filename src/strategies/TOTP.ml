@@ -105,3 +105,26 @@ module JSON_Responses : RESPONSES = struct
   let response_enabled _ =
     Dream.json ("{\"TOTP enabled\" : true}")
 end
+
+(**This module contains such settings as app name for titles *)
+module type HTML_settings = sig val app_name : string end
+
+module Make_HTML_Responses (S : HTML_settings) : RESPONSES = struct
+  let response_error _ err =
+    let err_str = Error.to_string_mach err in
+    TOTP_pages.error_tmpl ~app_name:S.app_name err_str |> Dream.html
+
+  let response_secret request secret =
+    let target = Dream.target request |> String.substr_replace_first ~pattern:"/generate_secret" ~with_:"/finish_setup" in
+    TOTP_pages.secret_tmpl ~app_name:S.app_name request target secret |> Dream.html
+
+  let response_enabled _ =
+    TOTP_pages.finish_tmpl ~app_name:S.app_name () |> Dream.html
+end
+
+(**[make_responses ?app_name (Variables)] is a convinience function for creating HTML response module without {!HTML_settings}.
+Returns first-class module.*)
+let make_html_responses ?(app_name="FPauth") ()  =
+  let module S = (struct let app_name = app_name end) in
+  let module HTML = Make_HTML_Responses (S) in
+  (module HTML : RESPONSES)

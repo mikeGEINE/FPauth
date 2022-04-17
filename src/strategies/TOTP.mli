@@ -64,3 +64,13 @@ module Make :
 
 (**Module with responses for TOTP in JSON format*)
 module JSON_Responses : RESPONSES
+
+(**This module contains such settings as app name for titles *)
+module type HTML_settings = sig val app_name : string end
+
+(**This functor creates module with {!RESPONSES} in HTML format*)
+module Make_HTML_Responses : functor (S : HTML_settings) -> RESPONSES
+
+(**[make_html_responses ~app_name ()] is a convinience function for creating HTML response module without {!HTML_settings}.
+Returns first-class module.*)
+val make_html_responses : ?app_name:string -> unit -> (module RESPONSES)

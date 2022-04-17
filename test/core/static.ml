@@ -111,4 +111,25 @@ let params = "FPauth.Static: Params", [
     let expected = None in
     params |> Params.get_param "key" |> Alcotest.(check (option string)) "extract_json" expected
   end;
+
+  "form param extractor" -: begin fun () ->
+    let req = Dream.request ~headers:[("Content-Type", "application/x-www-form-urlencoded")] "key=value" in
+    let params = Params.extract_form ~csrf:false req |> Lwt_main.run in
+    let expected = Some "value" in
+    params |> Params.get_param "key" |> Alcotest.(check (option string)) "extracted successfully" expected
+  end;
+
+  "form param extractor with unsupported content" -: begin fun () ->
+    let req = Dream.request "key=value" in
+    let params = Params.extract_form ~csrf:false req |> Lwt_main.run in
+    let expected = None in
+    params |> Params.get_param "key" |> Alcotest.(check (option string)) "not extracted" expected
+  end;
+
+  "form param extractor if Dream.form not Ok" -: begin fun () ->
+    let req = Dream.request ~headers:[("Content-Type", "application/x-www-form-urlencoded")] "key=value" in
+    let params = Params.extract_form req |> Lwt_main.run in
+    let expected = None in
+    params |> Params.get_param "key" |> Alcotest.(check (option string)) "not extracted" expected
+  end;
 ]

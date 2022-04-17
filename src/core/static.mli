@@ -57,8 +57,11 @@ sig
     (**[extract_query request] extracts all query params of a request and returns them as params*)
     val extract_query : extractor
     
-    (**[extract_json request] extracts all pairs of keys and values of a JSON request*)
+    (**[extract_json request] extracts all pairs of keys and values of a JSON request. {b Content-Type} must be [application/json].*)
     val extract_json : extractor
+
+    (**[extract_form request] extracts params from forms send with [Dream.csrf_tag]. {b Content-Type} must be [application/x-www-form-urlencoded].*)
+    val extract_form : ?csrf:bool -> extractor
 
     (**[of_assoc lst] creates [t] from assoc lists*)
     val of_assoc : (string * string) list -> t

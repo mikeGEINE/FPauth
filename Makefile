@@ -22,7 +22,7 @@ test :
 	@find $(ROOT) -name '*.coverage' | xargs rm -f
 	@dune build --no-print-directory \
 	  --instrument-with bisect_ppx --force @$(TEST)/runtest
-	@bisect-ppx-report html --expect=./src/core
+	@bisect-ppx-report html
 	@bisect-ppx-report summary
 	@echo See _coverage/index.html
 

@@ -5,3 +5,8 @@
  (preprocess
   (pps lwt_ppx))
   (instrumentation (backend bisect_ppx)))
+
+(rule
+ (deps TOTP_pages.eml.ml)
+ (targets TOTP_pages.ml)
+ (action (run dream_eml %{deps} --workspace %{workspace_root})))
