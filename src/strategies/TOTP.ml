@@ -19,11 +19,11 @@ end
 module type RESPONSES = sig
   open Dream
 
-  val response_error : Error.t -> response promise
+  val response_error : request -> Error.t -> response promise
 
-  val response_secret : string -> response promise
+  val response_secret : request -> string -> response promise
 
-  val response_enabled : response promise 
+  val response_enabled : request -> response promise 
 end
 
 module Make (R : RESPONSES) (M : MODEL) (V : FPauth_core.Auth_sign.VARIABLES with type entity = M.t)
@@ -59,33 +59,33 @@ module Make (R : RESPONSES) (M : MODEL) (V : FPauth_core.Auth_sign.VARIABLES wit
 
   let generate_secret request =
     match Dream.field request V.current_user with
-    | None -> Error.of_string "User should be authenticated first" |> response_error 
+    | None -> Error.of_string "User should be authenticated first" |> response_error request
     | Some user -> 
       match M.otp_enabled user with
-      | true -> Error.of_string "OTP is already enabled" |> response_error
+      | true -> Error.of_string "OTP is already enabled" |> response_error request
       | false -> 
         let secret = Twostep.TOTP.secret () in 
         let%lwt updated_user = M.set_otp_secret request user secret in
         update_current_user request updated_user;
-        response_secret secret
+        response_secret request secret
 
   let finish_setup request =
     match Dream.field request V.current_user with
-    | None -> Error.of_string "User should be authenticated first" |> response_error 
+    | None -> Error.of_string "User should be authenticated first" |> response_error request
     | Some user -> 
       match M.otp_enabled user with
-      | true -> Error.of_string "OTP is already enabled" |> response_error
+      | true -> Error.of_string "OTP is already enabled" |> response_error request
       | false -> 
         match Params.get_param_req "totp_code" request with
-        | None -> Error.of_string "\'TOTP code\' param not found in request" |> response_error
+        | None -> Error.of_string "\'TOTP code\' param not found in request" |> response_error request
         | Some otp_code -> 
           let secret = M.otp_secret user in
           match Twostep.TOTP.verify ~secret:secret ~code:otp_code () with
-          | false -> Error.of_string "One-time password is incorrect!" |> response_error
+          | false -> Error.of_string "One-time password is incorrect!" |> response_error request
           | true -> 
             let%lwt updated_user = M.set_otp_enabled request user true in
             update_current_user request updated_user;
-            response_enabled
+            response_enabled request
 
   let routes = 
     Dream.scope "/totp" [] [
@@ -97,14 +97,14 @@ module Make (R : RESPONSES) (M : MODEL) (V : FPauth_core.Auth_sign.VARIABLES wit
 end
 
 module JSON_Responses : RESPONSES = struct
-  let response_error err = 
+  let response_error _ err = 
     Dream.json ("{\"success\" : false, \n
     \"error\" : "^Error.to_string_mach err^"}")
 
-  let response_secret secret =
+  let response_secret _ secret =
     Dream.json ("{\"success\" : true, \n
             \"secret\" : \""^ secret ^"\" }")
 
-  let response_enabled =
+  let response_enabled _ =
     Dream.json ("{\"TOTP enabled\" : true}")
 end

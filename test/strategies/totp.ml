@@ -7,13 +7,13 @@ module Entity = EntityOTP
 module Auth = FPauth_core.Make_Auth(Entity)
 
 module OtpResponses = struct
-  let response_error err = 
+  let response_error _ err = 
     Dream.respond ("error : "^Error.to_string_hum err)
 
-  let response_secret _ =
+  let response_secret _ _ =
     Dream.respond ("secret : generated")
 
-  let response_enabled =
+  let response_enabled _ =
     Dream.respond ("TOTP enabled : true")
 end
 
@@ -76,7 +76,7 @@ let tests = "OTP strategy", [
   "Normal call" -: begin fun () ->
     let req = Dream.request "" in
     let otp_code = Twostep.TOTP.code ~secret:(Entity.otp_secret ()) () in
-    let response = Dream.test (test_middlewares_call [("otp_code", otp_code)] (test_handler user)) req 
+    let response = Dream.test (test_middlewares_call [("totp_code", otp_code)] (test_handler user)) req 
     and expected = "name : test" in
     Dream.body response
     |> Lwt_main.run
@@ -86,7 +86,7 @@ let tests = "OTP strategy", [
   "OTP disabled" -: begin fun () ->
     let req = Dream.request "" in
     let otp_code = Twostep.TOTP.code ~secret:(Entity.otp_secret ()) () in
-    let response = Dream.test (test_middlewares_call [("otp_code", otp_code)] (test_handler user_none)) req 
+    let response = Dream.test (test_middlewares_call [("totp_code", otp_code)] (test_handler user_none)) req 
     and expected = "next" in
     Dream.body response
     |> Lwt_main.run
@@ -105,7 +105,7 @@ let tests = "OTP strategy", [
   "Incorrect otp" -: begin fun () ->
     let req = Dream.request "" in
     let otp_code = "lalala" in
-    let response = Dream.test (test_middlewares_call [("otp_code", otp_code)] (test_handler user)) req 
+    let response = Dream.test (test_middlewares_call [("totp_code", otp_code)] (test_handler user)) req 
     and expected = "error : One-time password is incorrect!" in
     Dream.body response
     |> Lwt_main.run
@@ -113,7 +113,7 @@ let tests = "OTP strategy", [
   end;
 
   "Auth before otp setup" -: begin fun () ->
-    let req = Dream.request ~target:"/otp/generate_secret" ~method_:`GET "" in
+    let req = Dream.request ~target:"/totp/generate_secret" ~method_:`GET "" in
     let response = Dream.test (test_middlewares_handlers_empty []) req 
     and expected = "error : User should be authenticated first" in
     Dream.body response
@@ -122,7 +122,7 @@ let tests = "OTP strategy", [
   end;
 
   "Otp generate secret" -: begin fun () ->
-    let req = Dream.request ~target:"/otp/generate_secret" ~method_:`GET "" in
+    let req = Dream.request ~target:"/totp/generate_secret" ~method_:`GET "" in
     let response = Dream.test (test_middlewares_handlers user_none []) req 
     and expected = "secret : generated" in
     Dream.body response
@@ -131,7 +131,7 @@ let tests = "OTP strategy", [
   end;
 
   "Otp enabled for secret gen" -: begin fun () ->
-    let req = Dream.request ~target:"/otp/generate_secret" ~method_:`GET "" in
+    let req = Dream.request ~target:"/totp/generate_secret" ~method_:`GET "" in
     let response = Dream.test (test_middlewares_handlers user []) req 
     and expected = "error : OTP is already enabled" in
     Dream.body response
@@ -140,7 +140,7 @@ let tests = "OTP strategy", [
   end;
 
   "Auth before otp setup finish" -: begin fun () ->
-    let req = Dream.request ~target:"/otp/finish_setup" ~method_:`POST "" in
+    let req = Dream.request ~target:"/totp/finish_setup" ~method_:`POST "" in
     let response = Dream.test (test_middlewares_handlers_empty []) req 
     and expected = "error : User should be authenticated first" in
     Dream.body response
@@ -149,7 +149,7 @@ let tests = "OTP strategy", [
   end;
 
   "Otp enabled for setup finish" -: begin fun () ->
-    let req = Dream.request ~target:"/otp/finish_setup" ~method_:`POST "" in
+    let req = Dream.request ~target:"/totp/finish_setup" ~method_:`POST "" in
     let response = Dream.test (test_middlewares_handlers user []) req 
     and expected = "error : OTP is already enabled" in
     Dream.body response
@@ -158,9 +158,9 @@ let tests = "OTP strategy", [
   end;
 
   "Correct otp to finish" -: begin fun () ->
-    let req = Dream.request ~target:"/otp/finish_setup" ~method_:`POST "" in
+    let req = Dream.request ~target:"/totp/finish_setup" ~method_:`POST "" in
     let otp_code = Twostep.TOTP.code ~secret:(Entity.otp_secret ()) () in
-    let response = Dream.test (test_middlewares_handlers user_none [("otp_code", otp_code)]) req 
+    let response = Dream.test (test_middlewares_handlers user_none [("totp_code", otp_code)]) req 
     and expected = "TOTP enabled : true" in
     Dream.body response
     |> Lwt_main.run
@@ -168,9 +168,9 @@ let tests = "OTP strategy", [
   end;
 
   "Inorrect otp to finish" -: begin fun () ->
-    let req = Dream.request ~target:"/otp/finish_setup" ~method_:`POST "" in
+    let req = Dream.request ~target:"/totp/finish_setup" ~method_:`POST "" in
     let otp_code = "lololo" in
-    let response = Dream.test (test_middlewares_handlers user_none [("otp_code", otp_code)]) req 
+    let response = Dream.test (test_middlewares_handlers user_none [("totp_code", otp_code)]) req 
     and expected = "error : One-time password is incorrect!" in
     Dream.body response
     |> Lwt_main.run
@@ -178,9 +178,9 @@ let tests = "OTP strategy", [
   end;
 
   "No otp to finish" -: begin fun () ->
-    let req = Dream.request ~target:"/otp/finish_setup" ~method_:`POST "" in
+    let req = Dream.request ~target:"/totp/finish_setup" ~method_:`POST "" in
     let response = Dream.test (test_middlewares_handlers user_none []) req 
-    and expected = "error : \'OTP code\' param not found in request" in
+    and expected = "error : \'TOTP code\' param not found in request" in
     Dream.body response
     |> Lwt_main.run
     |> Alcotest.(check string) "Error raised" expected
@@ -200,7 +200,7 @@ let json_test_middlewares usr params = Dream.memory_sessions
 
 let json_tests = "OTP JSON responses tests", [
   "response_error" -: begin fun () ->
-    let req = Dream.request ~target:"/otp/finish_setup" ~method_:`POST "" in
+    let req = Dream.request ~target:"/totp/finish_setup" ~method_:`POST "" in
     let response = Dream.test (json_test_middlewares user []) req 
     and expected = "application/json" in
     Dream.header response "Content-Type"
@@ -209,7 +209,7 @@ let json_tests = "OTP JSON responses tests", [
   end;
 
   "response_secret" -: begin fun () ->
-    let req = Dream.request ~target:"/otp/generate_secret" ~method_:`GET "" in
+    let req = Dream.request ~target:"/totp/generate_secret" ~method_:`GET "" in
     let response = Dream.test (json_test_middlewares user_none []) req 
     and expected = "application/json" in
     Dream.header response "Content-Type"
@@ -218,9 +218,9 @@ let json_tests = "OTP JSON responses tests", [
   end;
 
   "response_error" -: begin fun () ->
-    let req = Dream.request ~target:"/otp/finish_setup" ~method_:`POST "" in
+    let req = Dream.request ~target:"/totp/finish_setup" ~method_:`POST "" in
     let otp_code = Twostep.TOTP.code ~secret:(Entity.otp_secret ()) () in
-    let response = Dream.test (json_test_middlewares user [("otp_code", otp_code)]) req 
+    let response = Dream.test (json_test_middlewares user [("totp_code", otp_code)]) req 
     and expected = "application/json" in
     Dream.header response "Content-Type"
     |> Option.value ~default:""

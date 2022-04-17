@@ -1,3 +1,3 @@
 (*Main test executable*)
 
-Alcotest.run "FPauth__strategies" [Password.tests; Otp.tests; Otp.json_tests]
+Alcotest.run "FPauth__strategies" [Password.tests; Totp.tests; Totp.json_tests]

@@ -31,13 +31,13 @@ module type MODEL =
 module type RESPONSES =
   sig
     (**This response is used to display all kinds of errors*)
-    val response_error : Base.Error.t -> Dream.response Lwt.t
+    val response_error : Dream.request ->  Base.Error.t -> Dream.response Lwt.t
 
     (**This response is used during TOTP setup. During this step users are provided with a secret, which he needs to put in his OTP-generator.*)
-    val response_secret : string -> Dream.response Lwt.t
+    val response_secret : Dream.request -> string -> Dream.response Lwt.t
 
     (**This response informs users that their TOTP has been enabled*)
-    val response_enabled : Dream.response Lwt.t
+    val response_enabled : Dream.request -> Dream.response Lwt.t
   end
 
 (**[Make] creates a strategy for a provided model with provided responses.*)
