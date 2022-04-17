@@ -1,5 +1,7 @@
 # FPauth - user authentication for Dream
 
+[![Coverage Status](https://coveralls.io/repos/github/mikeGEINE/FPauth/badge.svg?branch=coveralls)](https://coveralls.io/github/mikeGEINE/FPauth?branch=coveralls)
+
 FPauth is an easy user authentication system for [OCaml Dream](https://github.com/aantron/dream) web-framework.
 ![FPauth code example](docs/code-example.svg)
 
