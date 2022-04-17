@@ -45,8 +45,8 @@ let () = run
   ]
 ```
 Strategies and Responses modules are passed as first-class objects which suffice `FPauth.Auth_sign.STRATEGY` and `FPauth.Auth_sign.RESPONSES` signatures correspondingly. Extractor is a function which meets `FPauth.Static.Params.extractor` type.
-  * In `FPauth_responses` you can find some default responses in JSON format (HTML is in progress);
-  * In `FPauth.Static.Params` you can find some default extractors from JSON-requests' bodies or from query;
+  * In `FPauth_responses` you can find some default responses in JSON and HTML format;
+  * In `FPauth.Static.Params` you can find some default extractors from JSON-requests' bodies, forms or from query;
 * Done! Your application can now authenticate users!
 
 ## Advanced Usage

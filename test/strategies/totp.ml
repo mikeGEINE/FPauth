@@ -217,13 +217,55 @@ let json_tests = "OTP JSON responses tests", [
     |> Alcotest.(check string) "JSON recieved" expected
   end;
 
-  "response_error" -: begin fun () ->
+  "response_enabled" -: begin fun () ->
     let req = Dream.request ~target:"/totp/finish_setup" ~method_:`POST "" in
     let otp_code = Twostep.TOTP.code ~secret:(Entity.otp_secret ()) () in
-    let response = Dream.test (json_test_middlewares user [("totp_code", otp_code)]) req 
+    let response = Dream.test (json_test_middlewares user_none [("totp_code", otp_code)]) req 
     and expected = "application/json" in
     Dream.header response "Content-Type"
     |> Option.value ~default:""
     |> Alcotest.(check string) "JSON recieved" expected
+  end;
+]
+
+module HTML_responses = (val Otp.make_html_responses ~app_name:"Test" ())
+
+module Html_strat = Otp.Make (HTML_responses) (Entity) (Auth.Variables)
+
+let html_strat : Auth.Authenticator.strategy = (module Html_strat)
+
+let html_test_middlewares usr params = Dream.memory_sessions
+                                      @@ put_session usr
+                                      @@ Auth.Session_manager.auth_setup 
+                                      @@ Dream.router [
+                                        Auth.Router.call [html_strat] ~responses:(module Responses) ~extractor:(fake_extractor params)]
+
+let html_tests = "OTP HTML responses test", [
+  "response_error" -: begin fun () ->
+    let req = Dream.request ~target:"/totp/finish_setup" ~method_:`POST "" in
+    let response = Dream.test (html_test_middlewares user []) req 
+    and expected = "text/html; charset=utf-8" in
+    Dream.header response "Content-Type"
+    |> Option.value ~default:""
+    |> Alcotest.(check string) "HTML recieved" expected
+  end;
+
+  "response_secret" -: begin fun () ->
+    let req = Dream.request ~target:"/totp/generate_secret" ~method_:`GET "" in
+    let response = Dream.test (html_test_middlewares user_none []) req 
+    and expected = "text/html; charset=utf-8" in
+    Dream.header response "Content-Type"
+    |> Option.value ~default:""
+    |> Alcotest.(check string) "HTML recieved" expected
+  end;
+
+  "response_enabled" -: begin fun () ->
+    let req = Dream.request ~target:"/totp/finish_setup" ~method_:`POST "" in
+    let otp_code = Twostep.TOTP.code ~secret:(Entity.otp_secret ()) () in
+    let response = Dream.test (html_test_middlewares user_none [("totp_code", otp_code)]) req 
+    and expected = "text/html; charset=utf-8" in
+    Dream.header response "Content-Type"
+    |> Option.value ~default:""
+    |> Alcotest.(check string) "HTML recieved" expected
   end;
 ]
