@@ -14,13 +14,9 @@ module Make (M : Auth_sign.MODEL) (V : Auth_sign.VARIABLES with type entity = M.
 
   module type Strategy = Auth_sign.STRATEGY with type entity = entity
 
-  let set_authenticated ent request = 
+  let set_authenticated request = 
     set_field request V.authenticated true;
-    set_field request V.current_user ent;
     request
-
-  let set_session ent request = 
-    request |> put_session "auth" (M.serialize ent)
 
   (**[auth] is a recursive function for running strategies and verifying*)
   let rec auth (lst : strategy list) request ent : AuthResult.t promise =
@@ -32,7 +28,7 @@ module Make (M : Auth_sign.MODEL) (V : Auth_sign.VARIABLES with type entity = M.
       | Next -> auth strats request ent
       | Authenticated ent -> 
         let%lwt () =
-        request |> set_authenticated ent |> set_session ent in
+        request |> set_authenticated |> V.update_current_user ent in
         Lwt.return AuthResult.Authenticated
       | Rescue err -> set_field request V.auth_error err;
                       Lwt.return AuthResult.Rescue
