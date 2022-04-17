@@ -1,4 +1,4 @@
-name: Deploy API Documentation
+name: Deploy API Documentation & Coveralls report
 
 on:
   push:
@@ -30,12 +30,23 @@ jobs:
 
       - name: Install system dependencies
         run: |
-          opam depext -y --with-doc $(ls -1 *.opam | sed -e 's/\.opam$//')
+          opam depext -y --with-doc --with-test $(ls -1 *.opam | sed -e 's/\.opam$//')
         shell: bash
 
       - name: Install OCaml dependencies
-        run: opam install --deps-only -y --with-doc $(ls -1 *.opam | sed -e 's/\.opam$//')
+        run: opam install --deps-only -y --with-doc --with-test $(ls -1 *.opam | sed -e 's/\.opam$//')
         shell: bash
 
       - name: Deploy odoc to GitHub Pages
         uses: ocaml/setup-ocaml/deploy-doc@v2
+
+      - name: Generate coverage report
+        run: opam exec -- dune runtest --instrument-with bisect_ppx --force
+        shell: bash
+      
+      - name: Send report to Coveralls
+        run: opam exec -- bisect-ppx-report send-to Coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST_NUMBER: ${{ github.event.number }}
+        shell: bash
